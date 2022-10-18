@@ -5,4 +5,5 @@
 
   tasks:
     - command: "echo {{ type }}"
-    - debug: msg="{{ type }}"
+    - debug:
+        msg: "{{ type }}"
