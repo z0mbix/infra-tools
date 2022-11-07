@@ -12,12 +12,12 @@ data "amazon-ami" "source_ami" {
 data "git-commit" "cwd-head" {}
 
 locals {
-  ami_name   = "${var.type}-${var.distro_name}-${var.distro_version}-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
+  ami_name   = "${var.name_prefix}-${var.type}-${var.distro_name}-${var.distro_version}-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
   git_author = data.git-commit.cwd-head.author
   git_sha    = substr(data.git-commit.cwd-head.hash, 0, 8)
 
   tags = {
-    BuildInfo          = "Build No.: ${var.build_number}"
+    BuildNumber        = var.build_number
     BuildUrl           = "https://jenkins.hopefully.not/builds/${var.build_number}"
     DataClassification = var.data_classification
     DistroName         = var.distro_name
@@ -38,7 +38,7 @@ source "amazon-ebs" "ami" {
   ami_name                                  = local.ami_name
   ami_description                           = "${var.type} ${var.distro_name} ${var.distro_version} AMI"
   ami_regions                               = var.ami_regions
-  ebs_optimized                             = true # why doesn;t this work?
+  ebs_optimized                             = true
   encrypt_boot                              = var.encrypt_boot
   instance_type                             = var.aws_instance_type
   region                                    = var.aws_region
@@ -67,7 +67,14 @@ build {
   provisioner "shell" {
     execute_command = "sudo -H -S bash {{.Path}}"
     scripts = [
-      "../scripts/bootstrap-${var.distro_name}.sh"
+      "../scripts/common/bootstrap.sh"
+    ]
+  }
+
+  provisioner "shell" {
+    execute_command = "sudo -H -S bash {{.Path}}"
+    scripts = [
+      "../scripts/${var.distro_name}/bootstrap.sh"
     ]
   }
 
@@ -77,17 +84,22 @@ build {
       "--diff",
       "--verbose",
       "--tags=build",
-      "--extra-vars",
-      "ami_build=true",
-      "--extra-vars",
-      "type=${var.type}"
+      "--extra-vars=ami_build=true",
+      "--extra-vars=type=${var.type}",
     ]
   }
 
   provisioner "shell" {
     execute_command = "sudo -H -S bash {{.Path}}"
     scripts = [
-      "../scripts/cleanup-${var.distro_name}.sh"
+      "../scripts/${var.distro_name}/cleanup.sh"
+    ]
+  }
+
+  provisioner "shell" {
+    execute_command = "sudo -H -S bash {{.Path}}"
+    scripts = [
+      "../scripts/common/cleanup.sh"
     ]
   }
 }

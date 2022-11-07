@@ -1,0 +1,31 @@
+## Choose
+default:
+  just --choose
+
+## Validata Ubuntu packer configuration
+validate-ubuntu:
+	packer validate --var-file vars/scommon.pkrvar.hcl --var-file vars/ubuntu-2204.pkrvar.hcl .
+
+## Build Ubuntu AMI
+build-ubuntu: validate-ubuntu ## Build AMI
+	packer build --var-file vars/common.pkrvar.hcl --var-file ubuntu-2204.pkrvar.hcl vars/.
+
+## Validata RedHat packer configuration
+validate-redhat:
+	packer validate --var-file vars/common.pkrvar.hcl --var-file vars/redhat-9.pkrvar.hcl .
+
+## Build RedHat AMI
+build-redhat: validate-redhat ## Build AMI
+	packer build --var-file vars/common.pkrvar.hcl --var-file vars/redhat-9.pkrvar.hcl .
+
+## Validata Rocky packer configuration
+validate-rocky: ## Validate packer configuration
+	packer validate --var-file vars/common.pkrvar.hcl --var-file vars/rocky-9.pkrvar.hcl .
+
+# Build Rocky Linux AMI
+build-rocky: validate-rocky
+	packer build --var-file vars/common.pkrvar.hcl --var-file vars/rocky-9.pkrvar.hcl .
+
+# Show help
+help:
+  just --list

@@ -59,6 +59,10 @@ variable "owner" {
   default = "platform"
 }
 
+variable "name_prefix" {
+  type    = string
+}
+
 variable "skip_ami_creation" {
   type    = bool
   default = false
