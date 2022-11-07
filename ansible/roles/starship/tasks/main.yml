@@ -1,0 +1,47 @@
+---
+- name: get installed version
+  shell: "{{ starship_dest_dir }}/starship -V | cut -f2 -d' '"
+  register: starship_installed_version
+  changed_when: false
+  tags:
+    - build
+
+- name: download
+  get_url:
+    url: "{{ starship_tarball_url[ansible_architecture] }}"
+    dest: "/tmp/starship-{{ starship_version }}.tar.gz"
+  when: starship_installed_version.stdout != starship_version
+  tags:
+    - build
+
+- name: extract
+  unarchive:
+    src: "/tmp/starship-{{ starship_version }}.tar.gz"
+    dest: /tmp
+    creates: /tmp/starship
+    remote_src: true
+  when: starship_installed_version.stdout != starship_version
+  tags:
+    - build
+
+- name: install
+  copy:
+    src: /tmp/starship
+    dest: "{{ starship_dest_dir }}/starship"
+    remote_src: true
+    owner: root
+    group: root
+    mode: 0755
+  when: starship_installed_version.stdout != starship_version
+  tags:
+    - build
+
+- name: remove downloaded files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/starship
+    - "/tmp/starship-{{ starship_version }}.tar.gz"
+  tags:
+    - build
