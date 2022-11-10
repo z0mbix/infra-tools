@@ -1,6 +1,8 @@
 ---
 starship_version: 1.11.0
-starship_dest_dir: /usr/local/bin
+starship_install_dir: /usr/local/bin
+starship_config_path: /etc/starship.toml
 starship_tarball_url:
   x86_64: https://github.com/starship/starship/releases/download/v{{ starship_version }}/starship-x86_64-unknown-linux-gnu.tar.gz
   aarch64: https://github.com/starship/starship/releases/download/v{{ starship_version }}/starship-aarch64-unknown-linux-musl.tar.gz
+starship_env_colour: green

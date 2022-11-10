@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+[[ $TRACE ]] && set -x
+set -o pipefail
+
+declare verbose
+declare server_class
+declare initiator
+declare -r hostname="$HOSTNAME"
+
+usage() {
+  echo -e "Usage:\n"
+  echo "$(basename $0) -c [server class] -i [user/role] -t [tags] -n -v"
+  echo
+  echo "Use -c [server class] to specify the server class (e.g. webserver, bastion etc.)"
+  echo "Use -i to set the user or role that initiated the play"
+  echo "Use -n for a dry-run (check mode)"
+  echo "Use -t to set the ansible tags as a csv (e.g. base,ssh)"
+  echo "Use -v for verbose ansible output"
+  exit 1
+}
+
+while getopts ':c:i:nt:v' opt; do
+  case $opt in
+    c) server_class="$OPTARG" ;;
+    i) initiator="$OPTARG" ;;
+    n) check_mode=true ;;
+    t) ansible_tags="$OPTARG" ;;
+    v) verbose=true ;;
+    *) usage ;;
+  esac
+done
+
+if [[ -z $server_class ]]; then
+  echo "server class not provided! Set it with -c [server class]"
+  exit 1
+fi
+
+if [[ ! -f "playbooks/${server_class}.yml" ]]; then
+  echo "playbook ${server_class}.yml does not exist!"
+  exit 1
+fi
+
+if [[ -z $initiator ]]; then
+  echo "initiator not provided! Set it with -i [username/role]"
+  exit 1
+fi
+
+declare -a ansible_opts=(
+  --connection local
+  --limit "$hostname"
+  --diff
+  --extra-vars "initiator=${initiator}"
+)
+
+if [[ -n $ansible_tags ]]; then
+  ansible_opts+=(--tags "$ansible_tags")
+fi
+
+if [[ -n $check_mode ]]; then
+  ansible_opts+=(--check)
+fi
+
+if [[ -n $verbose ]]; then
+  ansible_opts+=(--verbose)
+fi
+
+ansible-playbook \
+  "${ansible_opts[@]}" \
+  playbooks/${server_class}.yml

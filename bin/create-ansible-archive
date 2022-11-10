@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+[[ $TRACE ]] && set -x
+set -e -u -o pipefail
+
+readonly bin_path="$(
+  cd "$(dirname "$0")" || exit 1
+  pwd -P
+)"
+
+declare -r ansible_archive='ansible-latest.tgz'
+
+cd "${bin_path}/../ansible" || exit 1
+tar -cz -f ../$ansible_archive .
+
+echo "created archive: ${PWD}/../${ansible_archive}"

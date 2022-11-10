@@ -1,13 +1,13 @@
 ---
 - name: get installed version
-  shell: "{{ starship_dest_dir }}/starship -V | cut -f2 -d' '"
+  ansible.builtin.shell: "{{ starship_install_dir }}/starship -V | cut -f2 -d' '"
   register: starship_installed_version
   changed_when: false
   tags:
     - build
 
 - name: download
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ starship_tarball_url[ansible_architecture] }}"
     dest: "/tmp/starship-{{ starship_version }}.tar.gz"
   when: starship_installed_version.stdout != starship_version
@@ -15,7 +15,7 @@
     - build
 
 - name: extract
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/tmp/starship-{{ starship_version }}.tar.gz"
     dest: /tmp
     creates: /tmp/starship
@@ -25,9 +25,9 @@
     - build
 
 - name: install
-  copy:
+  ansible.builtin.copy:
     src: /tmp/starship
-    dest: "{{ starship_dest_dir }}/starship"
+    dest: "{{ starship_install_dir }}/starship"
     remote_src: true
     owner: root
     group: root
@@ -37,11 +37,31 @@
     - build
 
 - name: remove downloaded files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
     - /tmp/starship
     - "/tmp/starship-{{ starship_version }}.tar.gz"
+  tags:
+    - build
+
+- name: create config file
+  ansible.builtin.template:
+    src: starship.toml.j2
+    dest: "{{ starship_config_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - build
+
+- name: create shell file
+  ansible.builtin.template:
+    src: starship.sh.j2
+    dest: /etc/profile.d/starship.sh
+    owner: root
+    group: root
+    mode: 0644
   tags:
     - build

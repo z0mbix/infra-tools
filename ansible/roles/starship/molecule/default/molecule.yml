@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint .
+  ansible-lint -x 701 .
+  flake8 --max-line-length=120
+platforms:
+  - name: starship
+    image: rockylinux:9
+provisioner:
+  name: ansible
+verifier:
+  name: testinfra

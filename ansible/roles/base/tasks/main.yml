@@ -1,0 +1,6 @@
+---
+- name: install packages
+  ansible.builtin.package:
+    name: "{{ packages_to_install }}"
+  tags:
+    - build

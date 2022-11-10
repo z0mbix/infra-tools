@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+[[ $TRACE ]] && set -x
+set -e -u -o pipefail
+
+declare -r temp_dir="$(mktemp -d -t provision.XXXXXX)"
+declare -r initiator='cloud-init'
+declare -r environment_name="$1"
+declare -r server_class="$2"
+declare -r hostname="$HOSTNAME"
+declare ansible_archive
+
+cleanup() {
+  # rm -rf "${temp_dir}"
+  echo "${temp_dir}"
+}
+
+trap cleanup EXIT
+
+echo "downloading ansible archive..."
+# TODO: implement this
+declare -r ansible_archive='/vagrant/ansible-latest.tgz'
+
+if [[ ! -f $ansible_archive ]]; then
+  echo "could not find ansible archive"
+  exit 1
+fi
+
+echo "extracting ansible archive..."
+tar -xz -f $ansible_archive -C $temp_dir
+
+cd $temp_dir || exit 1
+
+cat >./inventory <<EOF
+[${server_class}]
+${hostname}
+
+[${environment_name}:children]
+${server_class}
+EOF
+
+echo "running ansible..."
+./bin/play -i $initiator -c $server_class
