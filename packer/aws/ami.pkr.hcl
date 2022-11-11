@@ -68,12 +68,6 @@ build {
     execute_command = "sudo -H -S bash {{.Path}}"
     scripts = [
       "../scripts/common/bootstrap.sh"
-    ]
-  }
-
-  provisioner "shell" {
-    execute_command = "sudo -H -S bash {{.Path}}"
-    scripts = [
       "../scripts/${var.distro_name}/bootstrap.sh"
     ]
   }
@@ -93,12 +87,6 @@ build {
     execute_command = "sudo -H -S bash {{.Path}}"
     scripts = [
       "../scripts/${var.distro_name}/cleanup.sh"
-    ]
-  }
-
-  provisioner "shell" {
-    execute_command = "sudo -H -S bash {{.Path}}"
-    scripts = [
       "../scripts/common/cleanup.sh"
     ]
   }
