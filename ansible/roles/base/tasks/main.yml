@@ -2,5 +2,16 @@
 - name: install packages
   ansible.builtin.package:
     name: "{{ packages_to_install }}"
+    state: present
+  tags:
+    - build
+
+- name: add global shell config
+  ansible.builtin.template:
+    src: global.sh.j2
+    dest: /etc/profile.d/global.sh
+    owner: root
+    group: root
+    mode: 0644
   tags:
     - build

@@ -11,8 +11,7 @@ declare -r hostname="$HOSTNAME"
 declare ansible_archive
 
 cleanup() {
-  # rm -rf "${temp_dir}"
-  echo "${temp_dir}"
+  rm -rf "${temp_dir}"
 }
 
 trap cleanup EXIT
