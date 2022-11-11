@@ -78,7 +78,6 @@ build {
       "--diff",
       "--verbose",
       "--tags=build",
-      "--extra-vars=ami_build=true",
       "--extra-vars=type=${var.type}",
     ]
   }
