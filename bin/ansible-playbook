@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# This script is just a stub to help test that the provisioning code it working correctly
+# so it can be tested on a host without ansible installed
+#
+
+[[ $TRACE ]] && set -x
+set -o pipefail
+
+echo "ansible-playbook $*"
