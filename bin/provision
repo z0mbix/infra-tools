@@ -39,4 +39,7 @@ ${server_class}
 EOF
 
 echo "running ansible..."
-./bin/play -i $initiator -c $server_class
+./bin/play \
+  -c $server_class \
+  -e $environment_name \
+  -i $initiator

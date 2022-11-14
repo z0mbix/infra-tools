@@ -3,9 +3,10 @@
 [[ $TRACE ]] && set -x
 set -o pipefail
 
-declare verbose
+declare environment_name
 declare server_class
 declare initiator
+declare verbose
 declare -r hostname="$HOSTNAME"
 
 usage() {
@@ -13,6 +14,7 @@ usage() {
   echo "$(basename $0) -c [server class] -i [user/role] -t [tags] -n -v"
   echo
   echo "Use -c [server class] to specify the server class (e.g. webserver, bastion etc.)"
+  echo "Use -e [environment name] to specify the environment name (e.g. dev, prod etc.)"
   echo "Use -i to set the user or role that initiated the play"
   echo "Use -n for a dry-run (check mode)"
   echo "Use -t to set the ansible tags as a csv (e.g. base,ssh)"
@@ -20,9 +22,10 @@ usage() {
   exit 1
 }
 
-while getopts ':c:i:nt:v' opt; do
+while getopts ':c:e:i:nt:v' opt; do
   case $opt in
     c) server_class="$OPTARG" ;;
+    e) environment_name="$OPTARG" ;;
     i) initiator="$OPTARG" ;;
     n) check_mode=true ;;
     t) ansible_tags="$OPTARG" ;;
@@ -51,6 +54,7 @@ declare -a ansible_opts=(
   --limit "$hostname"
   --diff
   --extra-vars "initiator=${initiator}"
+  --extra-vars "environment_name=${environment_name}"
 )
 
 if [[ -n $ansible_tags ]]; then

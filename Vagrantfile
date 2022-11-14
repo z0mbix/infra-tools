@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     if ! command -v ansible-playbook >/dev/null; then
-      echo "Installing ansible..."
+      echo "installing ansible..."
       dnf -yq install ansible-core
     else
       echo "ansible already installed"
