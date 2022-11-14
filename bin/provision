@@ -3,6 +3,10 @@
 # This script downloads the archive of the ansible code from somewhere, extracts it,
 # then runs the play script to execute ansible-playbook
 #
+# example usage:
+#
+#   ./provision dev webserver
+#
 
 [[ $TRACE ]] && set -x
 set -e -u -o pipefail

@@ -11,6 +11,17 @@ readonly bin_path="$(
 declare -r ansible_archive='ansible-latest.tgz'
 
 cd "${bin_path}/../ansible" || exit 1
+
+# install galaxy collections
+ansible-galaxy collection install \
+  --requirements-file requirements.yml \
+  --collections-path ./galaxy/collections
+
+# install galaxy roles
+ansible-galaxy role install \
+  --role-file requirements.yml \
+  --roles-path ./galaxy/roles
+
 tar -cz -f ../$ansible_archive .
 
 echo "created archive: ${PWD}/../${ansible_archive}"
