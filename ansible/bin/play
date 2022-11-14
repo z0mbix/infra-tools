@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# This script runs ansible-playbook directly on a host using a pre-generated inventory file
+#
 
 [[ $TRACE ]] && set -x
 set -o pipefail
