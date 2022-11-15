@@ -12,7 +12,7 @@ data "amazon-ami" "source_ami" {
 data "git-commit" "cwd-head" {}
 
 locals {
-  ami_name   = "${var.name_prefix}-${var.type}-${var.distro_name}-${var.distro_version}-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
+  ami_name   = "${var.name_prefix}-${var.image_type}-${var.distro_name}-${var.distro_version}-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
   git_author = data.git-commit.cwd-head.author
   git_sha    = substr(data.git-commit.cwd-head.hash, 0, 8)
 
@@ -30,13 +30,13 @@ locals {
     Owner              = var.owner
     SourceAmi          = "{{ .SourceAMI }} ({{ .SourceAMIName }})"
     SourceAmiOwner     = "{{ .SourceAMIOwner }} ({{ .SourceAMIOwnerName }})"
-    Type               = var.type
+    Type               = var.image_type
   }
 }
 
 source "amazon-ebs" "ami" {
   ami_name                                  = local.ami_name
-  ami_description                           = "${var.type} ${var.distro_name} ${var.distro_version} AMI"
+  ami_description                           = "${var.image_type} ${var.distro_name} ${var.distro_version} AMI"
   ami_regions                               = var.ami_regions
   ebs_optimized                             = true
   encrypt_boot                              = var.encrypt_boot
@@ -73,12 +73,12 @@ build {
   }
 
   provisioner "ansible-local" {
-    playbook_file = "../../ansible/${var.type}.yml"
+    playbook_file = "../../ansible/${var.image_type}.yml"
     extra_arguments = [
       "--diff",
       "--verbose",
       "--tags=build",
-      "--extra-vars=type=${var.type}",
+      "--extra-vars=image_type=${var.image_type}",
     ]
   }
 

@@ -60,7 +60,7 @@ variable "owner" {
 }
 
 variable "name_prefix" {
-  type    = string
+  type = string
 }
 
 variable "skip_ami_creation" {
@@ -77,7 +77,7 @@ variable "ssh_username" {
   }
 }
 
-variable "type" {
+variable "image_type" {
   type    = string
   default = "base"
 }
