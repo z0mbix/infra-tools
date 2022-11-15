@@ -15,3 +15,11 @@
     mode: 0644
   tags:
     - provision
+
+- name: Disable SELinux
+  ansible.posix.selinux:
+    state: disabled
+  when: disable_selinux
+  tags:
+    - build
+    - provision

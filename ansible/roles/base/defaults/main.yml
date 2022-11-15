@@ -3,3 +3,5 @@ packages_to_install:
   - pigz
   - python3-devel
   - util-linux
+
+disable_selinux: yes
