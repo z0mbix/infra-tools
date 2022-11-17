@@ -1,4 +1,14 @@
 ---
+- name: set facts
+  ansible.builtin.set_fact:
+    hosting_provider_name: "{{ ansible_local['custom']['hosting']['name'] }}"
+    hosting_provider_location: "{{ ansible_local['custom']['hosting']['location'] }}"
+    environment_name: "{{ ansible_local['custom']['environment']['name'] }}"
+
+- name: initiate
+  ansible.builtin.debug:
+    msg: "play initiated by {{ initiator }} at {{ ansible_date_time.iso8601 }} in environment {{ environment_name }} ({{ hosting_provider_name }}/{{ hosting_provider_location }})"
+
 - name: install packages
   ansible.builtin.package:
     name: "{{ packages_to_install }}"
@@ -23,3 +33,9 @@
   tags:
     - build
     - provision
+
+- name: show facts
+  ansible.builtin.debug:
+    msg: "hosting: {{ hosting_provider_name }}: {{ hosting_provider_location }} (env: {{ environment_name }})"
+  tags:
+    - build

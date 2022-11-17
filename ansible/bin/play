@@ -42,6 +42,11 @@ if [[ -z $server_class ]]; then
   exit 1
 fi
 
+if [[ -z $environment_name ]]; then
+  echo "environment name not provided! Set it with -e [environment name]"
+  exit 1
+fi
+
 if [[ ! -f "playbooks/${server_class}.yml" ]]; then
   echo "playbook ${server_class}.yml does not exist!"
   exit 1
@@ -52,13 +57,21 @@ if [[ -z $initiator ]]; then
   exit 1
 fi
 
+cat >./inventory <<EOF
+[${server_class}]
+${hostname}
+
+[${environment_name}:children]
+${server_class}
+EOF
+
 declare -a ansible_opts=(
   --connection local
   --limit "$hostname"
   --diff
   --extra-vars "initiator=${initiator}"
-  --extra-vars "environment_name=${environment_name}"
 )
+# --extra-vars "environment_name=${environment_name}"
 
 if [[ -n $ansible_tags ]]; then
   ansible_opts+=(--tags "$ansible_tags")

@@ -1,9 +1,12 @@
 ---
-- hosts: all
-  pre_tasks:
-    - name: initiate
-      ansible.builtin.debug:
-        msg: "play initiated by {{ initiator }} at {{ ansible_date_time.iso8601 }}"
+- name: Run base role
+  hosts: all
   roles:
-    - { role: base, tags: base }
+    - { role: base, tags: base, always }
+  tags: always
+
+- name: Run all other roles
+  hosts: all
+  roles:
     - { role: starship, tags: starship }
+    - { role: nginxinc.nginx, tags: nginx }

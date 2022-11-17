@@ -3,19 +3,22 @@
 # This script downloads the archive of the ansible code from somewhere, extracts it,
 # then runs the play script to execute ansible-playbook
 #
+# usage:
+#
+#   ./provision [initiator]
+#
 # example usage:
 #
-#   ./provision dev webserver
+#   ./provision cloud-init
 #
 
 [[ $TRACE ]] && set -x
-set -e -u -o pipefail
+set -e -o pipefail
 
 declare -r temp_dir="$(mktemp -d -t provision.XXXXXX)"
-declare -r initiator='cloud-init'
-declare -r environment_name="$1"
-declare -r server_class="$2"
+declare -r initiator="$1"
 declare -r hostname="$HOSTNAME"
+declare environment_name
 declare ansible_archive
 
 cleanup() {
@@ -23,6 +26,29 @@ cleanup() {
 }
 
 trap cleanup EXIT
+
+if [[ -z $initiator ]]; then
+  echo "you need to specify the initiator"
+  exit 1
+fi
+
+# TODO: implement this
+set_hostname() {
+  hostnamectl hostname $hostname
+}
+
+# TODO: this would get the environment name from an instance tag
+get_environment() {
+  echo "dev"
+}
+
+# TODO: this would get the server class from an instance tag
+get_server_class() {
+  echo "webserver"
+}
+
+declare -r environment_name="$(get_environment)"
+declare -r server_class="$(get_server_class)"
 
 echo "downloading ansible archive..."
 # TODO: implement this
@@ -38,12 +64,17 @@ tar -xz -f $ansible_archive -C $temp_dir
 
 cd $temp_dir || exit 1
 
-cat >./inventory <<EOF
-[${server_class}]
-${hostname}
+if [[ ! -d /etc/ansible/facts.d ]]; then
+  mkdir -p /etc/ansible/facts.d
+fi
 
-[${environment_name}:children]
-${server_class}
+# set some custom facts
+cat >/etc/ansible/facts.d/custom.fact <<EOF
+[hosting]
+name=vagrant
+location=vm
+[environment]
+name=dev
 EOF
 
 echo "running ansible..."

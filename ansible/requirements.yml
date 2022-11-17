@@ -1,8 +1,10 @@
 ---
 roles:
-  - name: geerlingguy.java
-    version: 2.2.0
+  - name: nginxinc.nginx
+    version: 0.23.2
 
 collections:
   - name: ansible.posix
     version:  1.4.0
+  - name: community.general
+    version: 5.5.0

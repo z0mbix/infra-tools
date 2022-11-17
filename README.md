@@ -12,3 +12,5 @@ If you have vagrant and virtualbox available, you can easily test this with:
 ```shell
 vagrant up
 ```
+
+The vagrant image is the Rocky Linux 9 bento box from <https://app.vagrantup.com/bento/boxes/rockylinux-9>

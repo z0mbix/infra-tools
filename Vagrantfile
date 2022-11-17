@@ -8,7 +8,6 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "webserver" do |base|
-    # https://app.vagrantup.com/bento/boxes/rockylinux-9
     base.vm.box = "bento/rockylinux-9"
     base.vm.box_version = "202207.20.0"
     base.vm.hostname = "lon-dev-webserver-1"
@@ -23,6 +22,6 @@ Vagrant.configure("2") do |config|
     fi
 
     echo "provisioning..."
-    /vagrant/bin/provision dev webserver
+    /vagrant/bin/provision vagrant
   SHELL
 end
