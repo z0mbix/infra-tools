@@ -1,0 +1,37 @@
+## Choose
+default:
+  just --choose
+
+# Build Rocky Linux container image
+build-rocky:
+  podman build \
+    --tag rockylinux-9.1-systemd \
+    --file rockylinux-9.1-systemd.Containerfile \
+    .
+
+# Run Rocky Linux container
+run-rocky:
+  podman run \
+    --tty \
+    --interactive \
+    --rm \
+    --detach \
+    --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    --name rocky-systemd-9.1 \
+    localhost/rockylinux-9.1-systemd:latest
+
+# Open a shell in the Rocky Linux container
+exec-rocky:
+  podman exec \
+    --tty \
+    --interactive \
+    rocky-systemd-9.1 \
+    bash
+
+# Open a shell in the Rocky Linux container
+remove-rocky:
+  podman stop rocky-systemd-9.1
+
+# Show help
+help:
+  just --list
